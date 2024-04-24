@@ -1,0 +1,126 @@
+# start with importing the random module for the dice rolls
+import random
+
+
+# define as many random roll functions as there are dice types that need to be used 
+def random_roll_d20():
+  value = random.randrange(1, 21)
+  print(value)
+
+
+# this function uses a d6 but is designed for a specific roll type, rolling for stats
+def stat_roll_d6():
+  # a stat roll in dnd works by rolling four six sided dice, removing the smallest roll, and adding the rest
+  dice_group = []
+  for i in range(4):
+    i = random.randrange(1, 7)
+    dice_group.append(i)
+  dice_group.remove(min(dice_group)) 
+  return(sum(dice_group))
+
+# im defining a function for rolling advantage/disadvantage. if theres somehow an error here, it just brings you to the start of the code
+def adv_dis_roll(roll_type):
+    x = random.randrange(1, 21)
+    y = random.randrange(1, 21)
+    if roll_type == "adv":
+      check_roll = max(x, y)
+      return(check_roll)
+    elif roll_type == "dis":
+      check_roll = min(x, y)
+      return(check_roll)
+    else:
+      print("--- \nSorry, there was an error with the given input. Returning you to the main menu.")
+      return 0 
+
+
+# gonna start with rolling for skill checks, so ill have the user input the skill check
+def skill_check():
+  print("--- \nWhat is the skill check you need to pass? Please type an integer between 1 and 20.", )
+  while True:
+    checkvalue = input()
+    try:
+      checkvalue = int(checkvalue)
+    # if the user types a value that is either not an integer or not between 1 and 20, it will produce a corresponding error message and ask for a new input
+    except ValueError:
+      print("--- \nError! This value is not an integer. Please input an integer that is between 1 and 20.")
+      continue
+    if 1<= checkvalue <= 20:
+      break
+    else:
+      print("--- \nError! This value is not between 1 and 20. Please type an integer between 1 and 20.")
+  # the next input is roll modifiers. first, we need to decide if theres an advantage or disadvantage roll
+  rolltype_list = ["adv", "dis", "neither"]
+  print("--- \nIn order to pass the skill check, you must roll a minimum of " + str(checkvalue) + ". Do you roll for advantage, disadvantage, or neither? Type adv, dis, or neither respectivly.", )
+  while True:
+    roll_type = input()
+    # like before, it checks to be sure the the input is valid before using it. if it isn't, it asks for a new input
+    if roll_type not in rolltype_list:
+      print("--- \nError! This input does not correspond with the options. Please type adv, dis, or neither.")
+      continue
+    break
+  # to wrap up the roll preconditions, we'll ask for the constant modifier they have for this roll, such as a proficiency bonus or an inhibition
+  print("--- \nAre there roll modifiers you need to add to the roll, such as a proficiency bonus or a hinderance penalty? If so, please give the value, using negatives for penalties. If the roll is plain, please type 0.")
+  # it checks to be sure if the input the user gives is an integer and asks for a new input if it is not
+  while True:
+    modifier = input()
+    try:
+      modifier = int(modifier)
+    except ValueError:
+      print("--- \nError! This value is not an integer. Please input a valid integer.")
+      continue
+    break
+  # it now performs the roll, add the modifier, then compares it with the skill check
+  if roll_type == "neither":
+    check_roll = random.randrange(1, 21) 
+    if check_roll + modifier >= checkvalue:
+      print("--- \nYour roll was " + str(check_roll) + ". You passed the skill check!")
+    if check_roll + modifier < checkvalue:
+      print("--- \nYour roll was " + str(check_roll) + ". You failed the skill check...")
+  if roll_type == "adv" or roll_type == "dis": 
+    check_roll = adv_dis_roll(roll_type)
+    if check_roll + modifier >= checkvalue:
+      print("--- \nYour roll was " + str(check_roll) + ". You passed the skill check!")
+    if check_roll + modifier < checkvalue:
+      print("--- \nYour roll was " + str(check_roll) + ". You failed the skill check...")
+
+# the next function is rolling for character stats, which requires d6 rolls instead
+def rolling_stats():
+  # here, it defines the list for the stat rolls, the core stats once paired with these rolls, and the modifiers each stat roll gives
+  stat_list = []
+  stat_pairs = []
+  prof_mod = []
+  # these are the six core stats which will be assigned stat rolls
+  core_stats = ["Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma"]
+  for i in range(6):
+    stat_list.append(stat_roll_d6())
+  print("--- \nWhen rolling for stats in DND, you roll four six-sided dice, remove the lowest number rolled, and add the remaining three. This occurs six times until you have six values, which you will then assign to your character's six core stats. These stats are strength, dexterity, constitution, intelligence, wisdom, and charisma.")
+  for i in (core_stats):
+    #it rolls for the core stats, puts them in stat_list, then prints it with its positional number, creating a numbered list to pick from
+    print("Your stats are:")
+    x = 0
+    for stat in stat_list:
+      x = x + 1
+      print(str(x) + ". " + str(stat))
+    # it performs the function of producing a numbered list for every core stat in core_stats
+    print("--- \nPick which stat you would like to assign to " + str(i) + ". Select numbers 1 to " + str(len(stat_list)) + " for the corresponding stat.")
+    while True:
+      stat_choice = int(input())
+      if stat_choice < 1 or stat_choice > int(len(stat_list)):
+        print("--- \nError! This input does not correspond with the options. Please type a number between 1 and " + str(len(stat_list)) + ".")
+        continue 
+      else:
+        break
+    print("--- \n" + str(i) + " has been given " + str(stat_list[stat_choice - 1]) + ".")
+    # here, the core stat and its corresponding roll is added to stat_pairs, the proficiency modifier is added to prof_mod, and the selected stat is removed from the list of options
+    # in dnd, proficiency modifiers are given by taking the total stat, subtracting 10, and dividing by 2, rounding down to the nearest integer, hence //
+    stat_pairs.append(str(i) + " = " + str(stat_list[stat_choice - 1]))
+    prof_mod.append((stat_list[stat_choice - 1] - 10) // 2)
+    stat_list.remove(stat_list[stat_choice - 1])
+  print("--- \nYour characters total stats are now:")
+  # now it prints each pair of stats and their proficiency modifier
+  for pair in (stat_pairs):
+    print(str(pair))
+    print("Proficiency modifier = " + str(prof_mod[0]))
+    prof_mod.remove(prof_mod[0])
+  print("\nIf you would like to choose stats again, please return to the main menu and select the stat roll option.")  
+                      
