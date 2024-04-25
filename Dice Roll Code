@@ -1,12 +1,16 @@
 # start with importing the random module for the dice rolls
 import random
 
+# these values correspond to multiple functions and must be defined outside of them first
+save_inputs = ["1", "2", "3", "cancel"]
+file_1 = "This file is empty."
+file_2 = "This file is empty."
+file_3 = "This file is empty."
 
 # define as many random roll functions as there are dice types that need to be used 
 def random_roll_d20():
   value = random.randrange(1, 21)
   print(value)
-
 
 # this function uses a d6 but is designed for a specific roll type, rolling for stats
 def stat_roll_d6():
@@ -85,10 +89,13 @@ def skill_check():
 
 # the next function is rolling for character stats, which requires d6 rolls instead
 def rolling_stats():
-  # here, it defines the list for the stat rolls, the core stats once paired with these rolls, and the modifiers each stat roll gives
+
+  # Add this line to access the global variables
+  global file_1, file_2, file_3  
+  
+  # here, it defines the list for the stat rolls, the core stats once paired with these rolls as well as their modifiers
   stat_list = []
   stat_pairs = []
-  prof_mod = []
   # these are the six core stats which will be assigned stat rolls
   core_stats = ["Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma"]
   for i in range(6):
@@ -113,14 +120,114 @@ def rolling_stats():
     print("--- \n" + str(i) + " has been given " + str(stat_list[stat_choice - 1]) + ".")
     # here, the core stat and its corresponding roll is added to stat_pairs, the proficiency modifier is added to prof_mod, and the selected stat is removed from the list of options
     # in dnd, proficiency modifiers are given by taking the total stat, subtracting 10, and dividing by 2, rounding down to the nearest integer, hence //
-    stat_pairs.append(str(i) + " = " + str(stat_list[stat_choice - 1]))
-    prof_mod.append((stat_list[stat_choice - 1] - 10) // 2)
+    stat_pairs.append(str(i) + " = " + str(stat_list[stat_choice - 1]) + "\nModifier of " + str((stat_list[stat_choice - 1] - 10) // 2))
     stat_list.remove(stat_list[stat_choice - 1])
   print("--- \nYour characters total stats are now:")
   # now it prints each pair of stats and their proficiency modifier
-  for pair in (stat_pairs):
-    print(str(pair))
-    print("Proficiency modifier = " + str(prof_mod[0]))
-    prof_mod.remove(prof_mod[0])
-  print("\nIf you would like to choose stats again, please return to the main menu and select the stat roll option.")  
-                      
+  for pair in range(len(stat_pairs)):
+    print(str(stat_pairs[pair]))
+  print("\nIf you would like to choose stats again, please return to the main menu and select the stat roll option. Would you like to save this list? Type yes or no.")
+  # now, for one final feature, the user can save up to three different stat lists to bring up later if they wish
+  while True:
+    save_choice = input()
+    if save_choice == "yes":
+      break
+    if save_choice == "no":
+      break
+    else:
+      print("Error! This input is not a valid answer. Please type yes or no.")
+      continue 
+  # now if the user answers yes, they'll be presented a list of files to save their stats
+  if save_choice == "yes":
+    print("--- \nStats Files \nFile 1 \nFile 2 \nFile 3 \n\nPlease input the corresponding number (1, 2, or 3) of the file that you would like to save this list to, or input 'cancel' to abort the save. Keep in mind that if you choose a file with a preexisting list, it will be overwritten.")
+    # this while loop has another while loop inside it, the one outside being used so that it won't break if the user aborts the cancel option
+    while True:
+      while True:
+        chosen_file = str(input())
+        if chosen_file not in save_inputs:
+          print("--- \nError! This input is not a valid answer. Please input 1, 2, or 3 to pick a file to save to, or input cancel to abort the save.")
+          continue 
+        else:
+          break
+      # once they select an option, it saves the data to a corresponding file and closes the function
+      if chosen_file == "1":
+        file_1 = stat_pairs
+        print("--- \nYour stats have been saved to file 1. To retrieve them, please select the 'View Saved Stats' option in the main menu.")
+        break
+      if chosen_file == "2":
+        file_2 = stat_pairs
+        print("--- \nYour stats have been saved to file 2. To retrieve them, please select the 'View Saved Stats' option in the main menu.")
+        break
+      if chosen_file == "3":
+        file_3 = stat_pairs
+        print("--- \nYour stats have been saved to file 3. To retrieve them, please select the 'View Saved Stats' option in the main menu.")
+        break
+      if chosen_file == "cancel":
+        print("Are you sure? Type yes or no.")
+      while True:
+        abort_perm = str(input())
+        if abort_perm != "yes" "no":
+          print("--- \nError! This input is not a valid answer. Please type yes or no.")
+          continue 
+        else:
+          break
+      if abort_perm == "yes":
+        print("--- \nUnderstood, returning you to main menu...")
+        break
+      if abort_perm == "no":
+        continue 
+
+
+def stat_viewing():
+  print("--- \n-Stat Files- \nFile 1 \nFile 2 \nFile 3 \n\nPlease type the corresponding number (1, 2, or 3) of the file you would like to view, or type 'cancel' to return to the main menu.")
+  while True:
+    chosen_option = str(input())
+    if chosen_option not in save_inputs:
+      print("--- \nError! This input is not a valid answer. Please input 1, 2, or 3 to choose a file, or cancel to return to the main menu.")
+      continue
+    else:
+      break
+  if chosen_option == "1":
+    for i in file_1:
+      print(i)
+  if chosen_option == "2":
+    for i in file_2:
+      print(i)
+  if chosen_option == "3":
+    for i in file_3:
+      print(i)
+  if chosen_option == "cancel":
+    print("Understood, returning to main menu...")
+
+# Function to display the menu options
+def display_menu():
+    print("---\nMenu:")
+    print("1. Skill Check")
+    print("2. Rolling Stats")
+    print("3. View Saved Stats")
+    print("4. Exit")
+    print("Enter the number corresponding to your choice:")
+
+# Main program loop
+while True:
+    display_menu()
+    choice = input()
+    if choice == "1":
+        skill_check()
+    elif choice == "2":
+        rolling_stats()
+    elif choice == "3":
+        stat_viewing()
+    elif choice == "4":
+        print("Exiting program. Goodbye!")
+        break
+    else:
+        print("Invalid choice. Please enter a number between 1 and 4.")
+      
+
+
+
+     
+    
+      
+              
