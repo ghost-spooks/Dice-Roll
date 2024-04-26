@@ -180,11 +180,13 @@ def rolling_stats():
         print("Are you sure? Type yes or no.")
       while True:
         abort_perm = str(input())
-        if abort_perm != "yes" "no":
+        if abort_perm == "yes":
+          break
+        elif abort_perm == "no":
+          break
+        else:
           print("--- \nError! This input is not a valid answer. Please type yes or no.")
           continue
-        else:
-          break
       if abort_perm == "yes":
         print("--- \nUnderstood, returning you to main menu...")
         break
