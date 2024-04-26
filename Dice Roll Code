@@ -3,9 +3,9 @@ import random
 
 # these values correspond to multiple functions and must be defined outside of them first
 save_inputs = ["1", "2", "3", "cancel"]
-file_1 = "This file is empty."
-file_2 = "This file is empty."
-file_3 = "This file is empty."
+file_1 = ["This file is empty."]
+file_2 = ["This file is empty."]
+file_3 = ["This file is empty."]
 
 # define as many random roll functions as there are dice types that need to be used 
 def random_roll_d20():
@@ -111,17 +111,22 @@ def rolling_stats():
     # it performs the function of producing a numbered list for every core stat in core_stats
     print("--- \nPick which stat you would like to assign to " + str(i) + ". Select numbers 1 to " + str(len(stat_list)) + " for the corresponding stat.")
     while True:
-      stat_choice = int(input())
-      if stat_choice < 1 or stat_choice > int(len(stat_list)):
-        print("--- \nError! This input does not correspond with the options. Please type a number between 1 and " + str(len(stat_list)) + ".")
-        continue 
+      stat_choice = input() 
+      if stat_choice.isdigit():
+        stat_choice = int(stat_choice)
+        if 1 <= stat_choice <= len(stat_list):
+          break
+        else:
+          print("Error! This input is invalid. Please select a number from 1 to " + str(len(stat_list)) + ".")
+          continue
       else:
-        break
-    print("--- \n" + str(i) + " has been given " + str(stat_list[stat_choice - 1]) + ".")
+        print("Error! This input is invalid. Please select a number from 1 to " + str(len(stat_list)) + ".")
+        continue
+    print("--- \n" + str(i) + " has been given " + str(stat_list[int(stat_choice) - 1]) + ".")
     # here, the core stat and its corresponding roll is added to stat_pairs, the proficiency modifier is added to prof_mod, and the selected stat is removed from the list of options
     # in dnd, proficiency modifiers are given by taking the total stat, subtracting 10, and dividing by 2, rounding down to the nearest integer, hence //
-    stat_pairs.append(str(i) + " = " + str(stat_list[stat_choice - 1]) + "\nModifier of " + str((stat_list[stat_choice - 1] - 10) // 2))
-    stat_list.remove(stat_list[stat_choice - 1])
+    stat_pairs.append(str(i) + " = " + str(stat_list[int(stat_choice) - 1]) + "\nModifier of " + str((stat_list[int(stat_choice) - 1] - 10) // 2))
+    stat_list.remove(stat_list[int(stat_choice) - 1])
   print("--- \nYour characters total stats are now:")
   # now it prints each pair of stats and their proficiency modifier
   for pair in range(len(stat_pairs)):
@@ -188,14 +193,11 @@ def stat_viewing():
     else:
       break
   if chosen_option == "1":
-    for i in file_1:
-      print(i)
+    print(*file_1)
   if chosen_option == "2":
-    for i in file_2:
-      print(i)
+    print(*file_2)
   if chosen_option == "3":
-    for i in file_3:
-      print(i)
+    print(*file_3)
   if chosen_option == "cancel":
     print("Understood, returning to main menu...")
 
@@ -222,12 +224,4 @@ while True:
         print("Exiting program. Goodbye!")
         break
     else:
-        print("Invalid choice. Please enter a number between 1 and 4.")
-      
-
-
-
-     
-    
-      
-              
+        print("Invalid choice. Please enter a number between 1 and 4.")              
